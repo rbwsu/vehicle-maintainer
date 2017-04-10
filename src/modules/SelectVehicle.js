@@ -92,7 +92,9 @@ class SelectVehicle extends React.Component {
             .map(years => years.filter(year => year.year === parseInt(selectYear,0)))
             .reduce((prev, curr, i) => curr)
             .reduce((prev, curr, i) => curr).id
-        console.log(`Model/Year ID: ${modelYearId}`)
+        console.log(`Model/Year ID: ${modelYearId}`);
+
+        window.location.href = `/vehicle/${modelYearId}`;
     }
 
     componentDidMount() {
