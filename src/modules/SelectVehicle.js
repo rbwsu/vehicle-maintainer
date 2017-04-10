@@ -1,20 +1,23 @@
 import React from 'react';
-import { makeList } from '../services/vehicleService';
+import { makeList, styleList } from '../services/vehicleService';
 
 class SelectVehicle extends React.Component {
     constructor(props) {
         super(props);
         this.onMakeChange = this.onMakeChange.bind(this);
         this.onModelChange = this.onModelChange.bind(this);
-        this.onClick = this.onClick.bind(this);
         this.onYearChange = this.onYearChange.bind(this);
+        this.onClick = this.onClick.bind(this);
+        this.onStyleChange = this.onStyleChange.bind(this);
         this.state = {
             vehicleData: [],
             makes: [],
             models: [],
             years: [],
+            styles: [],
             isModelHidden: true,
             isYearHidden: true,
+            isStyleHidden: true,
             isBtnHidden: true
         }
     }
@@ -29,12 +32,14 @@ class SelectVehicle extends React.Component {
                     .reduce((prev, curr, i) => curr),
                 isModelHidden: false,
                 isYearHidden: true,
+                isStyleHidden: true,
                 isBtnHidden: true
             })
         } else {
             this.setState({
                 isModelHidden: true,
                 isYearHidden: true,
+                isStyleHidden: true,
                 isBtnHidden: true
             })
         }
@@ -53,17 +58,40 @@ class SelectVehicle extends React.Component {
                     .map(years => years.map(year => year.year))
                     .reduce((prev, curr, i) => curr),
                 isYearHidden: false,
+                isStyleHidden: true,
                 isBtnHidden: true
             })
         } else {
             this.setState({
                 isYearHidden: true,
+                isStyleHidden: true,
                 isBtnHidden: true
             })
         }
     }
 
     onYearChange() {
+        const selectMake = document.querySelector("#selectMake").value
+        const selectModel = document.querySelector("#selectModel").value
+        const selectYear = document.querySelector("#selectYear").value
+
+        if (selectMake && selectModel && selectYear) {
+            styleList(selectMake, selectModel, selectYear)
+                .then(res =>
+                this.setState({
+                    styles: res.styles,
+                    isStyleHidden: false,
+                    isBtnHidden: true
+                }))
+        } else {
+            this.setState({
+                isStyleHidden: true,
+                isBtnHidden: true
+            })
+        }
+    }
+
+    onStyleChange() {
         const selectMake = document.querySelector("#selectMake").value
         const selectModel = document.querySelector("#selectModel").value
         const selectYear = document.querySelector("#selectYear").value
@@ -89,7 +117,7 @@ class SelectVehicle extends React.Component {
             .map(models => models.filter(model => model.name === selectModel))
             .reduce((prev, curr, i) => curr)
             .map(model => model.years)
-            .map(years => years.filter(year => year.year === parseInt(selectYear,0)))
+            .map(years => years.filter(year => year.year === parseInt(selectYear, 0)))
             .reduce((prev, curr, i) => curr)
             .reduce((prev, curr, i) => curr).id
         console.log(`Model/Year ID: ${modelYearId}`);
@@ -131,6 +159,13 @@ class SelectVehicle extends React.Component {
                             <select id="selectYear" onChange={this.onYearChange} className={this.state.isYearHidden ? "hidden" : ""}>
                                 <option key=""></option>
                                 {this.state.years.map(year => <option key={year} value={year}>{year}</option>)}
+                            </select>
+                        </div>
+                        <div>
+                            <label htmlFor="selectStyle" className={this.state.isStyleHidden ? "hidden" : ""}>Style:</label>
+                            <select id="selectStyle" onChange={this.onStyleChange} className={this.state.isStyleHidden ? "hidden" : ""}>
+                                <option key=""></option>
+                                {this.state.styles.map(style => <option key={style.name} value={style.name}>{style.name}</option>)}
                             </select>
                         </div>
                         <button onClick={this.onClick} className={this.state.isBtnHidden ? "hidden" : ""}>Select</button>
