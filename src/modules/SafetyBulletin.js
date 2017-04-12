@@ -24,7 +24,8 @@ class SafetyBulletin extends React.Component {
     render() {
         console.log(this.state.recallList);
          return (
-            <div>
+            <div className="recall">
+                <h3>Vehicle Recalls</h3>
                 {this.state.safetyNotices.map(notice => 
                     <span className="safetyNotice">Recall Notice: {notice.recallNumber} Description: {notice.defectDescription}</span>)}
             </div>

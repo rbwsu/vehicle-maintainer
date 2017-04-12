@@ -10,19 +10,20 @@ class PhotoGallery extends React.Component {
     }
     
     componentDidMount() {
-            photoList(this.props.make,this.props.model,this.props.year)
-            .then(res => {
-                console.log(res);
-                this.setState({
-                    photos: res.photos
-                })
-            }) 
+            // photoList(this.props.make,this.props.model,this.props.year)
+            // .then(res => {
+            //     console.log(res);
+            //     this.setState({
+            //         photos: res.photos
+            //     })
+            // }) 
     }
 
     render() {
         return (
         <div>
-            <img className="vehiclePhoto" src={findPhotoLink(this.state.photos)} alt="" />
+            {/*<img className="vehiclePhoto" src={findPhotoLink(this.state.photos)} alt="" />*/}
+            <img className="vehiclePhoto" src="http://loremflickr.com/815/544" alt="" />
         </div>
         )
     }

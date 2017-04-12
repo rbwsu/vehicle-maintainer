@@ -2,6 +2,7 @@ const apiKey = 'sj63ecssxwhf8bstdy7e9t4f';
 const photoKey = '9ru9jb3zct2z2nbugrg2479h';
 const fetchList = `http://api.edmunds.com/api/vehicle/v2/makes?fmt=json&api_key=${apiKey}`;
 const fetchSafetyBulletin = `https://api.edmunds.com/v1/api/maintenance/recallrepository/findbymodelyearid?fmt=json&api_key=${apiKey}&`;
+const fetchMaintenance = `https://api.edmunds.com/v1/api/maintenance/actionrepository/findbymodelyearid?fmt=json&api_key=${apiKey}`;
 
 const makeList = () => fetch(fetchList)
     .then(res => res.ok ? res.json() : Promise.reject(res));
@@ -63,4 +64,13 @@ const findPhotoLink = (photos) => {
     }
 }
 
-export { makeList, recallList, photoList, findModelsByMake, findYearsByModelAndMake, findNiceMake, findNiceModel, findPhotoLink }
+const reviewList = (make,model,year) =>
+    fetch(`https://api.edmunds.com/api/vehiclereviews/v2/${make}/${model}/${year}?fmt=json&api_key=${apiKey}`)
+        .then(res => res.ok ? res.json() : Promise.reject(res))
+
+const maintenanceList = id => 
+    fetch(fetchMaintenance + `&modelyearid=${id}`)
+        .then(res => res.ok ? res.json() : Promise.rejct(res))
+        .then(res => res.actionHolder)
+
+export { makeList, recallList, photoList, findModelsByMake, findYearsByModelAndMake, findNiceMake, findNiceModel, findPhotoLink, reviewList, maintenanceList }
