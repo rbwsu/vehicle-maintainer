@@ -7,6 +7,7 @@ import './App.css';
 import SelectVehicle from './modules/SelectVehicle';
 import VehicleDashboard from './modules/VehicleDashboard';
 import Header from './modules/Header';
+import MaintenanceContainer from './modules/MaintenanceContainer';
 
 class App extends Component {
   render() {
@@ -16,6 +17,7 @@ class App extends Component {
           <Header />
           <Route exact path="/" component={SelectVehicle}/>
           <Route path="/vehicle/:make/:model/:year/:id" component={VehicleDashboard}/>
+          <Route path="/vehicle/maintenance/:id" component = {MaintenanceContainer}/>
         </div>
       </Router>
     );
