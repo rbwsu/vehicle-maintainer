@@ -69,7 +69,6 @@ const reviewList = (make, model, year) =>
         .then(res => res.ok ? res.json() : Promise.reject(res))
 
 const maintenanceList = id => {
-    const returnList = [];
     fetch(fetchMaintenance + `&modelyearid=${id}`)
         .then(res => res.ok ? res.json() : Promise.rejct(res))
         .then(res => res.actionHolder)
@@ -99,4 +98,29 @@ const maintenanceList = id => {
     return returnList;
 }
 
-export { makeList, recallList, photoList, findModelsByMake, findYearsByModelAndMake, findNiceMake, findNiceModel, findPhotoLink, reviewList, maintenanceList }
+const convertMaintenanceList = actionHolder => {
+    let i = 0;
+    const allowedFrequencies = [3, 4, 5];
+    return actionHolder.filter(m => allowedFrequencies.indexOf(m.frequency) >= 0)
+        .map(m => {
+            i++;
+            return ({
+                mileage: m.intervalMileage * i,
+                months: m.intervalMonths * i,
+                action: m.action,
+                item: m.item
+            })
+        }).sort((a, b) => {
+            if (a.mileage === b.mileage) {
+                if (a.months === b.months) {
+                    return a.item.localeCompare(b.item);
+                } else {
+                    return b.months - a.months;
+                }
+            } else {
+                b.mileage - a.mileage;
+            }
+        })
+}
+
+export { makeList, recallList, photoList, findModelsByMake, findYearsByModelAndMake, findNiceMake, findNiceModel, findPhotoLink, reviewList, maintenanceList, convertMaintenanceList }
