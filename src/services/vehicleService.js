@@ -10,8 +10,8 @@ const makeList = () => fetch(fetchList)
 const recallList = id => fetch(fetchSafetyBulletin + `modelyearid=${id}`)
     .then(res => res.ok ? res.json() : Promise.reject(res));
 
-const photoList = (make,model,year) => fetch(`https://api.edmunds.com/api/media/v2/${make}/${model}/${year}/photos?api_key=${photoKey}&fmt=json&width=815&shottype=FQ`)
-                                .then(res => res.ok ? res.json() : Promise.reject(res));
+const photoList = (make, model, year) => fetch(`https://api.edmunds.com/api/media/v2/${make}/${model}/${year}/photos?api_key=${photoKey}&fmt=json&width=815&shottype=FQ`)
+    .then(res => res.ok ? res.json() : Promise.reject(res));
 
 const findModelsByMake = (vehicleData, vehicleMake) => {
     return vehicleData.filter(make => make.name === vehicleMake)
@@ -31,13 +31,13 @@ const findYearsByModelAndMake = (vehicleData, vehicleMake, vehicleModel) => {
 };
 
 const findNiceVehicle = (vehicleData, vehicleMake, vehicleModel) => {
-    const niceMake = findNiceMake(vehicleData,vehicleMake);
+    const niceMake = findNiceMake(vehicleData, vehicleMake);
 }
 
 const findNiceMake = (vehicleData, vehicleMake) => {
     return vehicleData.filter(make => make.name === vehicleMake)
-            .map(make => make.niceName)
-            .reduce((prev,curr,i) => curr);
+        .map(make => make.niceName)
+        .reduce((prev, curr, i) => curr);
 };
 
 const findNiceModel = (vehicleData, vehicleMake, vehicleModel) => {
@@ -54,23 +54,49 @@ const findPhotoLink = (photos) => {
     if (photos && photos.length > 0) {
         const prefix = 'https://media.ed.edmunds-media.com';
         const link = photos.map(photo => photo.sources)
-                .reduce((prev,curr,i) => prev)
-                .map(source => source.link)
-                .map(link => link.href)
-                .reduce((prev,curr,i) => curr);
+            .reduce((prev, curr, i) => prev)
+            .map(source => source.link)
+            .map(link => link.href)
+            .reduce((prev, curr, i) => curr);
         return prefix + link;
     } else {
         return undefined;
     }
 }
 
-const reviewList = (make,model,year) =>
+const reviewList = (make, model, year) =>
     fetch(`https://api.edmunds.com/api/vehiclereviews/v2/${make}/${model}/${year}?fmt=json&api_key=${apiKey}`)
         .then(res => res.ok ? res.json() : Promise.reject(res))
 
-const maintenanceList = id => 
+const maintenanceList = id => {
+    const returnList = [];
     fetch(fetchMaintenance + `&modelyearid=${id}`)
         .then(res => res.ok ? res.json() : Promise.rejct(res))
         .then(res => res.actionHolder)
+        .filter(res => res.frequency === 3 || res.frequency === 4)
+        .map(m => {
+            if (m.frequency === 3) {
+                returnList.push(({
+                    miles: m.intervalMileage,
+                    months: m.intervalMonth,
+                    action: m.action,
+                    item: m.item
+                }))
+            } else {
+                const maxMiles = 400000;
+                const maxMonths = 312;
+                for (let factor = 1; ((factor * m.intervalMileage) < maxMiles || (factor * m.intervalMonth) < maxMonths); factor++) {
+                    returnList.push(
+                        ({
+                            miles: m.intervalMileage * factor,
+                            months: m.intervalMonth * factor,
+                            action: m.action,
+                            item: m.item
+                        }))
+                }
+            }
+        });
+    return returnList;
+}
 
 export { makeList, recallList, photoList, findModelsByMake, findYearsByModelAndMake, findNiceMake, findNiceModel, findPhotoLink, reviewList, maintenanceList }
