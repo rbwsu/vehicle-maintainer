@@ -68,11 +68,9 @@ const reviewList = (make, model, year) =>
     fetch(`https://api.edmunds.com/api/vehiclereviews/v2/${make}/${model}/${year}?fmt=json&api_key=${apiKey}`)
         .then(res => res.ok ? res.json() : Promise.reject(res))
 
-const maintenanceList = id => {
-    fetch(fetchMaintenance + `&modelyearid=${id}`)
-        .then(res => res.ok ? res.json() : Promise.rejct(res))
-        .then(res => res.actionHolder)
-        .filter(res => res.frequency === 3 || res.frequency === 4)
+const convertMaintenanceList = actionHolder => {
+    let returnList = [];
+    actionHolder.filter(res => res.frequency === 3 || res.frequency === 4)
         .map(m => {
             if (m.frequency === 3) {
                 returnList.push(({
@@ -82,8 +80,8 @@ const maintenanceList = id => {
                     item: m.item
                 }))
             } else {
-                const maxMiles = 400000;
-                const maxMonths = 312;
+                const maxMiles = 250000;
+                const maxMonths = 150;
                 for (let factor = 1; ((factor * m.intervalMileage) < maxMiles || (factor * m.intervalMonth) < maxMonths); factor++) {
                     returnList.push(
                         ({
@@ -95,32 +93,44 @@ const maintenanceList = id => {
                 }
             }
         });
-    return returnList;
+    return returnList.sort((a, b) => {
+        if (a.miles === b.miles) {
+            return a.months - b.months;
+        } else {
+            return a.miles - b.miles;
+        }
+    });
 }
 
-const convertMaintenanceList = actionHolder => {
-    let i = 0;
-    const allowedFrequencies = [3, 4, 5];
-    return actionHolder.filter(m => allowedFrequencies.indexOf(m.frequency) >= 0)
-        .map(m => {
-            i++;
-            return ({
-                mileage: m.intervalMileage * i,
-                months: m.intervalMonths * i,
-                action: m.action,
-                item: m.item
-            })
-        }).sort((a, b) => {
-            if (a.mileage === b.mileage) {
-                if (a.months === b.months) {
-                    return a.item.localeCompare(b.item);
-                } else {
-                    return b.months - a.months;
-                }
-            } else {
-                b.mileage - a.mileage;
-            }
-        })
-}
+
+const maintenanceList = id =>
+    fetch(fetchMaintenance + `&modelyearid=${id}`)
+        .then(res => res.ok ? res.json() : Promise.rejct(res))
+        .then(res => res.actionHolder)
+
+// const convertMaintenanceList = actionHolder => {
+//     let i = 0;
+//     const allowedFrequencies = [3, 4, 5];
+//     return actionHolder.filter(m => allowedFrequencies.indexOf(m.frequency) >= 0)
+//         .map(m => {
+//             i++;
+//             return ({
+//                 mileage: m.intervalMileage * i,
+//                 months: m.intervalMonths * i,
+//                 action: m.action,
+//                 item: m.item
+//             })
+//         }).sort((a, b) => {
+//             if (a.mileage === b.mileage) {
+//                 if (a.months === b.months) {
+//                     return a.item.localeCompare(b.item);
+//                 } else {
+//                     return b.months - a.months;
+//                 }
+//             } else {
+//                 b.mileage - a.mileage;
+//             }
+//         })
+// }
 
 export { makeList, recallList, photoList, findModelsByMake, findYearsByModelAndMake, findNiceMake, findNiceModel, findPhotoLink, reviewList, maintenanceList, convertMaintenanceList }

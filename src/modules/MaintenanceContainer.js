@@ -4,9 +4,22 @@ import { maintenanceList, convertMaintenanceList } from '../services/vehicleServ
 class MaintenanceContainer extends React.Component {
     constructor(props) {
         super(props);
+        this.onBlur = this.onBlur.bind(this);
         this.state = {
             maintenance: [],
-            actionHolder: []
+            originalMaintenance: []
+        }
+    }
+
+    onBlur() {
+        const inFilter = document.querySelector("#filterMiles");
+        if (inFilter && inFilter.value) {
+            const filterVal = inFilter.value;
+            if (filterVal) {
+                this.setState({
+                    maintenance: this.state.originalMaintenance.filter(m => m.miles >= filterVal)
+                })
+            }
         }
     }
 
@@ -14,39 +27,33 @@ class MaintenanceContainer extends React.Component {
         maintenanceList(this.props.match.params.id)
             .then(res => {
                 this.setState({
-                    actionHolder: res,
+                    originalMaintenance: convertMaintenanceList(res),
                     maintenance: convertMaintenanceList(res)
                 })
-                console.log(this.state.actionHolder);
-                console.log(this.state.maintenance);
             })
     }
 
     render() {
-        if (this.maintenance) {
             return (
                 <div>
                     <h2>Recommended Maintenance</h2>
+                    <label htmlFor="filterMiles">Filter by mileage: </label>
+                    <input id="filterMiles" type="number" onBlur={this.onBlur} />
                     <ul>
-                    {this.state.maintenance.map(m => {
-                        console.log(m);
-                        return (
-                            <li>
-                                <div>
-                                    <p>Test Maintenance</p>
-                                </div>
-                            </li>
-                        ) 
+                        {this.state.maintenance.map(m => {
+                            return (
+                                <li className="maintenanceItem">
+                                    <div>
+                                        <p className="itemTitle">{m.action} {m.item}</p>
+                                        <p className="itemText">{m.miles} miles {m.months ? `or ${m.months} months` : ``}</p>
+                                    </div>
+                                </li>
+                            )
 
-                    })}
+                        })}
                     </ul>
                 </div>
             )
-        } else {
-            return (
-                <h3>Loading...</h3>
-            )
-        }
     }
 }
 

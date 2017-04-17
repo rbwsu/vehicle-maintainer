@@ -93,3 +93,36 @@ select {
     width: 840px;
   }
 }
+
+ul {
+  list-style: none;
+  margin: 0;
+  padding:0;
+}
+
+.maintenanceItem {
+  border: 1px solid lightblue;
+  box-shadow: 10px 5px 5px lightgray;
+  margin: 0.4em;
+  padding: 0.4em;
+}
+
+.itemTitle {
+  text-transform: capitalize;
+}
+
+.itemText {
+  padding-left: 2em;
+}
+
+#filterMiles {
+  padding: 0.3em 0px 0.3em 0px;
+  font-size: 1em;
+  border-radius: 0.3em;
+  border: 0.2px solid lightgrey;
+}
+
+.navLink {
+  text-decoration: none;
+  padding: 1em;
+}

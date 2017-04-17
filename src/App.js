@@ -17,7 +17,7 @@ class App extends Component {
           <Header />
           <Route exact path="/" component={SelectVehicle}/>
           <Route path="/vehicle/:make/:model/:year/:id" component={VehicleDashboard}/>
-          <Route path="/vehicle/maintenance/:id" component = {MaintenanceContainer}/>
+          <Route path="/vehicle/maintenance/:id" component={MaintenanceContainer}/>
         </div>
       </Router>
     );
