@@ -1,6 +1,6 @@
 const apiKey = 'sj63ecssxwhf8bstdy7e9t4f';
 const photoKey = '9ru9jb3zct2z2nbugrg2479h';
-const fetchList = `http://api.edmunds.com/api/vehicle/v2/makes?fmt=json&api_key=${apiKey}`;
+const fetchList = `https://api.edmunds.com/api/vehicle/v2/makes?fmt=json&api_key=${apiKey}`;
 const fetchSafetyBulletin = `https://api.edmunds.com/v1/api/maintenance/recallrepository/findbymodelyearid?fmt=json&api_key=${apiKey}&`;
 const fetchMaintenance = `https://api.edmunds.com/v1/api/maintenance/actionrepository/findbymodelyearid?fmt=json&api_key=${apiKey}`;
 
@@ -107,30 +107,5 @@ const maintenanceList = id =>
     fetch(fetchMaintenance + `&modelyearid=${id}`)
         .then(res => res.ok ? res.json() : Promise.rejct(res))
         .then(res => res.actionHolder)
-
-// const convertMaintenanceList = actionHolder => {
-//     let i = 0;
-//     const allowedFrequencies = [3, 4, 5];
-//     return actionHolder.filter(m => allowedFrequencies.indexOf(m.frequency) >= 0)
-//         .map(m => {
-//             i++;
-//             return ({
-//                 mileage: m.intervalMileage * i,
-//                 months: m.intervalMonths * i,
-//                 action: m.action,
-//                 item: m.item
-//             })
-//         }).sort((a, b) => {
-//             if (a.mileage === b.mileage) {
-//                 if (a.months === b.months) {
-//                     return a.item.localeCompare(b.item);
-//                 } else {
-//                     return b.months - a.months;
-//                 }
-//             } else {
-//                 b.mileage - a.mileage;
-//             }
-//         })
-// }
 
 export { makeList, recallList, photoList, findModelsByMake, findYearsByModelAndMake, findNiceMake, findNiceModel, findPhotoLink, reviewList, maintenanceList, convertMaintenanceList }

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Redirect } from 'react-router-dom';
 import { makeList, findModelsByMake, findYearsByModelAndMake, findNiceMake, findNiceModel } from '../services/vehicleService';
 
 class SelectVehicle extends React.Component {
@@ -15,15 +16,21 @@ class SelectVehicle extends React.Component {
             years: [],
             isModelHidden: true,
             isYearHidden: true,
-            isBtnHidden: true
+            isBtnHidden: true,
+            make: "",
+            model: "",
+            year: 0,
+            id: 0,
+            redirect: false
         }
     }
+
 
     onMakeChange() {
         const selectMake = document.querySelector("#selectMake").value
         if (selectMake) {
             this.setState({
-                models: findModelsByMake(this.state.vehicleData,selectMake),
+                models: findModelsByMake(this.state.vehicleData, selectMake),
                 isModelHidden: false,
                 isYearHidden: true,
                 isBtnHidden: true
@@ -42,7 +49,7 @@ class SelectVehicle extends React.Component {
         const selectModel = document.querySelector("#selectModel").value
         if (selectMake && selectModel) {
             this.setState({
-                years: findYearsByModelAndMake(this.state.vehicleData,selectMake,selectModel),
+                years: findYearsByModelAndMake(this.state.vehicleData, selectMake, selectModel),
                 isYearHidden: false,
                 isBtnHidden: true
             })
@@ -84,9 +91,15 @@ class SelectVehicle extends React.Component {
             .reduce((prev, curr, i) => curr)
             .reduce((prev, curr, i) => curr).id
         console.log(`Model/Year ID: ${modelYearId}`);
-        const niceMake = findNiceMake(this.state.vehicleData,selectMake);
-        const niceModel = findNiceModel(this.state.vehicleData,selectMake,selectModel);
-        window.location.href = `/vehicle/${niceMake}/${niceModel}/${selectYear}/${modelYearId}`;
+        const niceMake = findNiceMake(this.state.vehicleData, selectMake);
+        const niceModel = findNiceModel(this.state.vehicleData, selectMake, selectModel);
+        this.setState({
+            make: niceMake,
+            model: niceModel,
+            year: selectYear,
+            id: modelYearId,
+            redirect: true
+        })
     }
 
     componentDidMount() {
@@ -100,7 +113,9 @@ class SelectVehicle extends React.Component {
     }
 
     render() {
-        if (this.state.makes.length > 0) {
+        if (this.state.redirect) {
+            return <Redirect to={`/vehicle/${this.state.make}/${this.state.model}/${this.state.year}/${this.state.id}`}/>
+        } else if (this.state.makes.length > 0) {
             return (
                 <div>
                     <div className="selectForm">
